@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var etNote: EditText
     private lateinit var btSave: Button
     private lateinit var btRead: ImageButton
-    private lateinit var noteBook :ArrayList<NoteBook>
+    private lateinit var noteBook: ArrayList<NoteBook>
 
     private val databaseHelper by lazy { DatabaseHelper(applicationContext) }
 
@@ -34,13 +34,21 @@ class MainActivity : AppCompatActivity() {
             val note: String = etNote.text.toString()
             databaseHelper.saveData(note)
             Toast.makeText(this, "Added successfully to database", Toast.LENGTH_SHORT).show()
+            refreshTable()
+            etNote.text.clear()
         }
         btRead.setOnClickListener {
-            noteBook= databaseHelper.readData()
-            rvAdapter.update(noteBook)
+            refreshTable()
         }
         rvAdapter = RVAdapter()
         myRV.adapter = rvAdapter
         myRV.layoutManager = LinearLayoutManager(applicationContext)
+        refreshTable()
+
+    }
+
+    fun refreshTable() {
+        noteBook = databaseHelper.readData()
+        rvAdapter.update(noteBook)
     }
 }
