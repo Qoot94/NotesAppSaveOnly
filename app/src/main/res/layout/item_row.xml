@@ -4,21 +4,72 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:drawable/bottom_bar"
-    android:backgroundTint="#F8EFD4"
-    android:backgroundTintMode="screen"
+    android:layout_marginLeft="3dp"
+    android:layout_marginRight="3dp"
+    android:layout_marginBottom="2dp"
+    android:background="@android:drawable/divider_horizontal_dark"
+    android:backgroundTint="@color/purple_500"
     android:orientation="vertical"
-    android:padding="5dp">
+    android:padding="2dp">
 
-    <TextView
-        android:id="@+id/tvContent"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:fontFamily="cursive"
-        android:padding="5dp"
-        android:paddingBottom="3dp"
-        android:text="title"
-        android:textColor="#806F63"
-        android:textSize="24sp" />
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:padding="2dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvPk"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:fontFamily="monospace"
+                android:paddingTop="7dp"
+                android:paddingRight="20dp"
+                android:text="no."
+                android:textColor="@color/purple_200" />
+
+            <TextView
+                android:id="@+id/tvContent"
+                android:layout_width="246dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="cursive"
+                android:padding="5dp"
+                android:text="title"
+                android:textColor="#806F63"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/ibUpdate"
+                android:layout_width="35dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@drawable/ic_round_edit_24"
+                android:backgroundTint="#D2BC9EDF"
+                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+
+            <ImageButton
+                android:id="@+id/ibDelete"
+                android:layout_width="34dp"
+                android:layout_height="match_parent"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/ic_round_delete_24"
+                android:backgroundTint="@color/purple_500"
+                tools:ignore="SpeakableTextPresentCheck,TouchTargetSizeCheck" />
+        </LinearLayout>
+
+    </LinearLayout>
 
 </LinearLayout>

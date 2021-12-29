@@ -1,54 +1,72 @@
 package com.example.notesappsaveonly
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
-    lateinit var myRV: RecyclerView
-    lateinit var rvAdapter: RVAdapter
+    private lateinit var myRV: RecyclerView
+    private lateinit var rvAdapter: RVAdapter
     private lateinit var etNote: EditText
     private lateinit var btSave: Button
-    private lateinit var btRead: ImageButton
-    private lateinit var noteBook: ArrayList<NoteBook>
+    private lateinit var noteBook: List<NoteBook>
 
-    private val databaseHelper by lazy { DatabaseHelper(applicationContext) }
+    private val notebookDao by lazy { NoteBookDatabase.getDatabase(this).notesDoa() }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        noteBook = arrayListOf<NoteBook>()
+        noteBook = arrayListOf()
         //set up UI
         myRV = findViewById(R.id.rvMain)
         etNote = findViewById(R.id.etNote)
         btSave = findViewById(R.id.btSave)
-        btRead = findViewById(R.id.ibRead)
 
-        //create button interactions
+        //db CRUD: create button interactions
+        //create
         btSave.setOnClickListener {
             val note: String = etNote.text.toString()
-            databaseHelper.saveData(note)
+            CoroutineScope(IO).launch {
+                notebookDao.addNote(NoteBook(0, note))
+
+            }
             Toast.makeText(this, "Added successfully to database", Toast.LENGTH_SHORT).show()
             refreshTable()
             etNote.text.clear()
         }
-        btRead.setOnClickListener {
-            refreshTable()
-        }
+
         rvAdapter = RVAdapter()
         myRV.adapter = rvAdapter
         myRV.layoutManager = LinearLayoutManager(applicationContext)
+        //read
         refreshTable()
-
     }
 
-    fun refreshTable() {
-        noteBook = databaseHelper.readData()
+    private fun refreshTable() {
+        CoroutineScope(IO).launch {
+            val data = withContext(Dispatchers.Default) {
+                notebookDao.getNote()
+            }
+            if (data.isNotEmpty()) {
+                noteBook = data
+                withContext(Main) {
+                    rvAdapter.update(noteBook)
+                }
+            } else {
+                Log.e("Main-error", "unable to get data")
+            }
+        }
         rvAdapter.update(noteBook)
     }
 }
