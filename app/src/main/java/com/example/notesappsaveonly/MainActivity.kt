@@ -1,54 +1,61 @@
 package com.example.notesappsaveonly
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageButton
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.notesappsaveonly.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
-    lateinit var myRV: RecyclerView
-    lateinit var rvAdapter: RVAdapter
+    lateinit var binding: ActivityMainBinding
+    private lateinit var myRV: RecyclerView
+    private lateinit var rvAdapter: RVAdapter
     private lateinit var etNote: EditText
     private lateinit var btSave: Button
-    private lateinit var btRead: ImageButton
-    private lateinit var noteBook: ArrayList<NoteBook>
 
-    private val databaseHelper by lazy { DatabaseHelper(applicationContext) }
+    //    lateinit var noteBooks: List<NoteBook>
+    lateinit var myViewModel: MyViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        noteBook = arrayListOf<NoteBook>()
-        //set up UI
-        myRV = findViewById(R.id.rvMain)
-        etNote = findViewById(R.id.etNote)
-        btSave = findViewById(R.id.btSave)
-        btRead = findViewById(R.id.ibRead)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
-        //create button interactions
+        //set ui elements
+        myRV = binding.rvMain
+        etNote = binding.etNote
+        btSave = binding.btSave
+//        noteBooks = listOf()
+        rvAdapter = RVAdapter(this)
+
+
+        myViewModel = ViewModelProvider(this).get(MyViewModel::class.java)
+        //read
+        myViewModel.getData().observe(this, { noteBook -> rvAdapter.update(noteBook) })
+        setView()
+        //db CRUD: create button interactions
+        //create
         btSave.setOnClickListener {
             val note: String = etNote.text.toString()
-            databaseHelper.saveData(note)
-            Toast.makeText(this, "Added successfully to database", Toast.LENGTH_SHORT).show()
-            refreshTable()
+            myViewModel.addData(NoteBook(pk = 0, note))
             etNote.text.clear()
+            setView()
+            Toast.makeText(this, "Added successfully to database", Toast.LENGTH_SHORT)
+                .show()
+
         }
-        btRead.setOnClickListener {
-            refreshTable()
-        }
-        rvAdapter = RVAdapter()
-        myRV.adapter = rvAdapter
-        myRV.layoutManager = LinearLayoutManager(applicationContext)
-        refreshTable()
+
 
     }
 
-    fun refreshTable() {
-        noteBook = databaseHelper.readData()
-        rvAdapter.update(noteBook)
+    private fun setView() {
+        myRV.adapter = rvAdapter
+        myRV.layoutManager = LinearLayoutManager(applicationContext)
+        myViewModel.getData().observe(this, { noteBook -> rvAdapter.update(noteBook) })
+
     }
 }

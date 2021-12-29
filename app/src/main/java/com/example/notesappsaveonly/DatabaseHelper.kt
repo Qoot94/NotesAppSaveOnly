@@ -41,5 +41,13 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(context, "notesDatabas
         }
         return noteBook
     }
+    fun updateData(content:NoteBook){
+        val contentValues = ContentValues()
+        contentValues.put("Content", content.Note)
+        sqliteDatabase.update("Notes",contentValues, "pk = ${content.pk}", null)
+    }
+    fun deleteData(content:NoteBook){
+        sqliteDatabase.delete("Notes","pk = ${content.pk}", null)
+    }
 
 }

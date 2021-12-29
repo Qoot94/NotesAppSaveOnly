@@ -1,3 +1,7 @@
 package com.example.notesappsaveonly
 
-data class NoteBook (val pk: Int, val Note :String)
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName ="Notes")
+data class NoteBook(@PrimaryKey(autoGenerate = true) val pk: Int, val Note:String)
