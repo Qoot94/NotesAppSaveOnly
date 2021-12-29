@@ -8,16 +8,17 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class MainActivity : AppCompatActivity() {
     lateinit var myRV: RecyclerView
     lateinit var rvAdapter: RVAdapter
     private lateinit var etNote: EditText
     private lateinit var btSave: Button
-    private lateinit var btRead: ImageButton
     private lateinit var noteBook: ArrayList<NoteBook>
 
     private val databaseHelper by lazy { DatabaseHelper(applicationContext) }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,9 +28,9 @@ class MainActivity : AppCompatActivity() {
         myRV = findViewById(R.id.rvMain)
         etNote = findViewById(R.id.etNote)
         btSave = findViewById(R.id.btSave)
-        btRead = findViewById(R.id.ibRead)
 
-        //create button interactions
+        //db CRUD: create button interactions
+        //create
         btSave.setOnClickListener {
             val note: String = etNote.text.toString()
             databaseHelper.saveData(note)
@@ -37,17 +38,16 @@ class MainActivity : AppCompatActivity() {
             refreshTable()
             etNote.text.clear()
         }
-        btRead.setOnClickListener {
-            refreshTable()
-        }
+
         rvAdapter = RVAdapter()
         myRV.adapter = rvAdapter
         myRV.layoutManager = LinearLayoutManager(applicationContext)
+        //read
         refreshTable()
 
     }
 
-    fun refreshTable() {
+    private fun refreshTable() {
         noteBook = databaseHelper.readData()
         rvAdapter.update(noteBook)
     }
